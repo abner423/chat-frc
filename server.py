@@ -25,11 +25,37 @@ def listParticipants(room):
             participants += 1
     return 'participants: {}, total: {}'.format(data, participants)
 
+def listRooms():
+    return 'rooms: {}'.format(rooms)
+
+def existsRoom(roomCheck):
+    flag = False
+    for room in rooms:
+        if room == roomCheck:
+            flag = True
+    return flag
+
+def changeRoom(actualRoom, newRoom ,nickname, indexUser):
+    message = {'value': '{} saiu!'.format(nickname).encode('ascii'), 'room': actualRoom}
+    object_message = namedtuple("ObjectMessage", message.keys())(*message.values())
+    broadcast(object_message)
+
+    message = {'value': "{} entrou!".format(nickname).encode('ascii'), 'room': newRoom}
+    object_message = namedtuple("ObjectMessage", message.keys())(*message.values())
+    broadcast(object_message)
+
+    clientToSet = clients.pop(indexUser)
+    
+    # clientToSet.room = newRoom
+    clientW = {'client': clientToSet.client, 'room':newRoom}
+    object_w = namedtuple("ObjectName", clientW.keys())(*clientW.values())
+    clients.append(object_w)
+
+    
 
 def broadcast(message):
     for clientWithRoom in clients:
         if clientWithRoom.room == message.room:
-        # if True:
             clientWithRoom.client.send(message.value)
 
 
@@ -43,10 +69,20 @@ def handle(client):
                     index = -1
 
             roomToSend = clients[index].room
+            nicknameUser = nicknames[index]
             message = {'value': client.recv(1024), 'room': roomToSend}
             object_message = namedtuple("ObjectMessage", message.keys())(*message.values())
-            if object_message.value.decode('ascii') == '/lp':
+            valueToCompare = object_message.value.decode('ascii')
+            if valueToCompare == '/lp':
                 client.send(listParticipants(object_message.room).encode('ascii'))
+            elif valueToCompare == '/ls':
+                client.send(listRooms().encode('ascii'))
+            elif '/ts' in valueToCompare:
+                print("aqui")
+                if existsRoom(str(valueToCompare).split(':')[1]):
+                    changeRoom(roomToSend, str(valueToCompare).split(':')[1],nicknameUser, index)
+                else:
+                     client.send("Sala inexistente".encode('ascii'))
             else:
                 broadcast(object_message)
         except:

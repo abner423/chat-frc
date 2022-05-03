@@ -35,9 +35,14 @@ def write():
             print('Listar salas disponíveis: /ls')
             print('Trocar de sala: /ts:nome_da_sala')
         elif dadoDigitado == '/lp':
-            client.send('/lp'.encode('ascii'))
-        # elif dadoDigitado == '/ls':
-        # elif dadoDigitado.contains('/ts'):
+            client.send(dadoDigitado.encode('ascii'))
+        elif dadoDigitado == '/ls':
+            client.send(dadoDigitado.encode('ascii'))
+        elif '/ts' in dadoDigitado:
+            if ':' not in dadoDigitado:
+                print("Dado inválido para troca de sala")
+            else:
+                client.send(dadoDigitado.encode('ascii'))
         else:
             message = '{}: {}'.format(nickname, dadoDigitado)
             client.send(message.encode('ascii'))
