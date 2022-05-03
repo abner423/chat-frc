@@ -12,7 +12,7 @@ server.bind((host, port))
 server.listen()
 
 clients = []
-nicknames = []
+# nicknames = []
 rooms = []
 
 def listParticipants(room):
@@ -20,8 +20,8 @@ def listParticipants(room):
     data = []
     for index, item in enumerate(clients):
         if item.room == room:
-            nickname = nicknames[index]
-            data.append(nickname)
+            # nickname = nicknames[index]
+            data.append(item.nickname)
             participants += 1
     return 'participants: {}, total: {}'.format(data, participants)
 
@@ -47,7 +47,7 @@ def changeRoom(actualRoom, newRoom ,nickname, indexUser):
     clientToSet = clients.pop(indexUser)
     
     # clientToSet.room = newRoom
-    clientW = {'client': clientToSet.client, 'room':newRoom}
+    clientW = {'client': clientToSet.client, 'room':newRoom, 'nickname': nickname}
     object_w = namedtuple("ObjectName", clientW.keys())(*clientW.values())
     clients.append(object_w)
 
@@ -69,7 +69,7 @@ def handle(client):
                     index = -1
 
             roomToSend = clients[index].room
-            nicknameUser = nicknames[index]
+            nicknameUser = clients[index].nickname
             message = {'value': client.recv(1024), 'room': roomToSend}
             object_message = namedtuple("ObjectMessage", message.keys())(*message.values())
             valueToCompare = object_message.value.decode('ascii')
@@ -78,7 +78,6 @@ def handle(client):
             elif valueToCompare == '/ls':
                 client.send(listRooms().encode('ascii'))
             elif '/ts' in valueToCompare:
-                print("aqui")
                 if existsRoom(str(valueToCompare).split(':')[1]):
                     changeRoom(roomToSend, str(valueToCompare).split(':')[1],nicknameUser, index)
                 else:
@@ -95,13 +94,12 @@ def handle(client):
             removerCliente = clients[index]
             clients.remove(removerCliente)
             client.close()
-            nickname = nicknames[index]
 
-            message = {'value': '{} saiu!'.format(nickname).encode('ascii'), 'room': removerCliente.room}
+            message = {'value': '{} saiu!'.format(removerCliente.nickname).encode('ascii'), 'room': removerCliente.room}
             object_message = namedtuple("ObjectMessage", message.keys())(*message.values())
 
             broadcast(object_message)
-            nicknames.remove(nickname)
+            # nicknames.remove(nickname)
             break
 
 
@@ -114,13 +112,14 @@ def receive():
         nickname = client.recv(1024).decode('ascii')
         
         room = client.recv(1024).decode('ascii')
-        nicknames.append(nickname)
+        # nicknames.append(nickname)
         if not existsRoom(room):
             rooms.append(room)
 
-        clientWithRoom = {'client': client, 'room':room}
+        clientWithRoom = {'client': client, 'room':room, 'nickname': nickname}
         object_name = namedtuple("ObjectName", clientWithRoom.keys())(*clientWithRoom.values())
         clients.append(object_name)
+        print(object_name.nickname)
 
         print("Nome do usuário é {}".format(nickname))
 
