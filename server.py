@@ -112,9 +112,11 @@ def receive():
 
         client.send('NICK'.encode('ascii'))
         nickname = client.recv(1024).decode('ascii')
+        
         room = client.recv(1024).decode('ascii')
         nicknames.append(nickname)
-        rooms.append(room)
+        if not existsRoom(room):
+            rooms.append(room)
 
         clientWithRoom = {'client': client, 'room':room}
         object_name = namedtuple("ObjectName", clientWithRoom.keys())(*clientWithRoom.values())
