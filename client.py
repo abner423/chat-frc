@@ -43,6 +43,13 @@ def write():
                 print("Dado inválido para troca de sala")
             else:
                 client.send(dadoDigitado.encode('ascii'))
+        elif '/cs' in dadoDigitado:
+            if ':' not in dadoDigitado:
+                print("Dado inválido para criação de sala")
+            else:
+                client.send(dadoDigitado.encode('ascii'))
+        # elif dadoDigitado == '/sair':
+        #     client.send(dadoDigitado.encode('ascii'))
         else:
             message = '{}: {}'.format(nickname, dadoDigitado)
             client.send(message.encode('ascii'))
