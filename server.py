@@ -12,7 +12,6 @@ server.bind((host, port))
 server.listen()
 
 clients = []
-# nicknames = []
 rooms = []
 
 def listParticipants(room):
@@ -20,7 +19,6 @@ def listParticipants(room):
     data = []
     for index, item in enumerate(clients):
         if item.room == room:
-            # nickname = nicknames[index]
             data.append(item.nickname)
             participants += 1
     return 'participants: {}, total: {}'.format(data, participants)
@@ -46,7 +44,6 @@ def changeRoom(actualRoom, newRoom ,nickname, indexUser):
 
     clientToSet = clients.pop(indexUser)
     
-    # clientToSet.room = newRoom
     clientW = {'client': clientToSet.client, 'room':newRoom, 'nickname': nickname}
     object_w = namedtuple("ObjectName", clientW.keys())(*clientW.values())
     clients.append(object_w)
@@ -99,7 +96,6 @@ def handle(client):
             object_message = namedtuple("ObjectMessage", message.keys())(*message.values())
 
             broadcast(object_message)
-            # nicknames.remove(nickname)
             break
 
 
@@ -112,7 +108,6 @@ def receive():
         nickname = client.recv(1024).decode('ascii')
         
         room = client.recv(1024).decode('ascii')
-        # nicknames.append(nickname)
         if not existsRoom(room):
             rooms.append(room)
 
