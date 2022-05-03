@@ -34,6 +34,7 @@ def write():
             print('Listar participantes da sala atual: /lp')
             print('Listar salas disponíveis: /ls')
             print('Trocar de sala: /ts:nome_da_sala')
+            print('Criar nova sala: /cs:nome_da_sala')
         elif dadoDigitado == '/lp':
             client.send(dadoDigitado.encode('ascii'))
         elif dadoDigitado == '/ls':
