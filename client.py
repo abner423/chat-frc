@@ -40,7 +40,7 @@ def write():
         elif dadoDigitado == '/ls':
             client.send(dadoDigitado.encode('ascii'))
         elif '/ts' in dadoDigitado:
-            if ':' not in dadoDigitado:
+            if ':' not in dadoDigitado or dadoDigitado.split(':')[1].strip() == '':
                 print("Dado inválido para troca de sala")
             else:
                 client.send(dadoDigitado.encode('ascii'))

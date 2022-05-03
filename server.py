@@ -82,8 +82,9 @@ def handle(client):
             elif '/cs' in valueToCompare:
                 if not existsRoom(str(valueToCompare).split(':')[1]):
                     rooms.append(str(valueToCompare).split(':')[1])
+                    changeRoom(roomToSend, str(valueToCompare).split(':')[1],nicknameUser, index)
                 else:
-                     client.send("Sala j[a existe".encode('ascii'))
+                     client.send("Sala já existe".encode('ascii'))
             else:
                 broadcast(object_message)
         except:
