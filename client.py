@@ -5,14 +5,15 @@ import threading
 
 nickname = input("Escolha seu nome de usuário: ")
 sala = input("Digite a sala que deseja entrar ou criar: ")
+trocaSala = False
 
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(('127.0.0.1', 55555))
 
-
 def receive():
-    while True:
+    global trocaSala
+    while not trocaSala:
         try:
             message = client.recv(1024).decode('ascii')
             if message == 'NICK':
@@ -21,13 +22,13 @@ def receive():
             else:
                 print(message)
         except:
-            print("Ocorreu um erro!")
             client.close()
             break
 
 
 def write():
-    while True:
+    global trocaSala
+    while not trocaSala:
         dadoDigitado = input('')
         if dadoDigitado == '/menu':
             print('Lista de comandos disponíveis:')
@@ -49,8 +50,10 @@ def write():
                 print("Dado inválido para criação de sala")
             else:
                 client.send(dadoDigitado.encode('ascii'))
-        # elif dadoDigitado == '/sair':
-        #     client.send(dadoDigitado.encode('ascii'))
+        elif dadoDigitado == '/sair':
+            trocaSala = False
+            client.close()
+            break
         else:
             message = '{}: {}'.format(nickname, dadoDigitado)
             client.send(message.encode('ascii'))
